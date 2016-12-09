@@ -5,6 +5,8 @@ using Microsoft.AspNet.Identity;
 using System.Collections.Generic;
 using Promact.Erp.DomainModel.ApplicationClass;
 using Promact.Erp.Util.StringConstants;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace Promact.Erp.Core.Controllers
 {
@@ -14,10 +16,18 @@ namespace Promact.Erp.Core.Controllers
     {
         private readonly ITaskMailRepository _taskMailReport;
         private readonly IStringConstantRepository _stringConstant;
+        private readonly AppConstant a;
         public TaskReportController(ITaskMailRepository taskMailReport, IStringConstantRepository stringConstant)
         {
             this._taskMailReport = taskMailReport;
             _stringConstant = stringConstant;
+            var path = "D:\\New Task Mail Report\\New folder\\slack-erp-custom-integration-mvc\\Slack.Automation\\Promact.Erp.Util\\StringConstants\\StringConstants.json";
+            using (StreamReader r = File.OpenText(path))
+            {
+
+                string json = r.ReadToEnd();
+                a= JsonConvert.DeserializeObject<AppConstant>(json);
+            }
         }
 
         //[HttpGet]
@@ -106,7 +116,8 @@ namespace Promact.Erp.Core.Controllers
         public async Task<List<TaskMailUserAc>> TaskMailDetailsReportPreviousDate(string UserRole, string CreatedOn,string UserId,string UserName)
         {
             string LoginId = User.Identity.GetUserId();
-            string PreviousPage = _stringConstant.PriviousPage;
+            string PreviousPage;
+            a.TaskReport.TryGetValue("PreviousPage", out PreviousPage);
             return await _taskMailReport.TaskMailDetailsReportNextPreviousDate(UserId, UserName, UserRole,CreatedOn, LoginId, PreviousPage);
             //return await _taskMailReport.TaskMailDetailsReport(UserId, UserRole, UserName, LoginId);
         }
@@ -144,8 +155,12 @@ namespace Promact.Erp.Core.Controllers
         public async Task<List<TaskMailUserAc>> TaskMailDetailsReportNextDate(string UserRole, string CreatedOn, string UserId, string UserName)
         {
             string LoginId = User.Identity.GetUserId();
-            string NextPage = _stringConstant.NextPage;
-            return await _taskMailReport.TaskMailDetailsReportNextPreviousDate(UserId, UserName, UserRole, CreatedOn, LoginId, NextPage);
+            //string NextPage;//=Util.Properties.Settings.Default.NextPage;
+            //a.TaskReport.TryGetValue("NextPage", out NextPage);
+            //Util.Properties.Settings.Default["NextPage"] = NextPage;
+            //Util.Properties.Settings.Default.Save();
+            var a = Util.Properties.Settings.Default.NextPage;
+            return await _taskMailReport.TaskMailDetailsReportNextPreviousDate(UserId, UserName, UserRole, CreatedOn, LoginId, Util.Properties.Settings.Default.NextPage);
             //return await _taskMailReport.TaskMailDetailsReport(UserId, UserRole, UserName, LoginId);
         }
 

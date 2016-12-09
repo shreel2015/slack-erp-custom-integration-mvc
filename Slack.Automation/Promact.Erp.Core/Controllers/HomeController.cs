@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Promact.Erp.Util.StringConstants;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace Promact.Erp.Core.Controllers
 {
@@ -44,6 +46,8 @@ namespace Promact.Erp.Core.Controllers
         */
         public ActionResult Index()
         {
+            var path="D:\\New Task Mail Report\\New folder\\slack-erp-custom-integration-mvc\\Slack.Automation\\Promact.Erp.Util\\StringConstants";
+            CreateFileWatcher(path);
             if (User.Identity.IsAuthenticated)
             {
                 return RedirectToAction(_stringConstant.AfterLogIn, _stringConstant.Home);
@@ -51,6 +55,59 @@ namespace Promact.Erp.Core.Controllers
             return View();
             
         }
+
+        public void CreateFileWatcher(string path)
+        {
+            // Create a new FileSystemWatcher and set its properties.
+            FileSystemWatcher watcher = new FileSystemWatcher();
+            watcher.Path = path;
+            /* Watch for changes in LastAccess and LastWrite times, and 
+               the renaming of files or directories. */
+            watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
+               | NotifyFilters.FileName | NotifyFilters.DirectoryName;
+            // Only watch text files.
+            watcher.Filter = "StringConstants.json";
+
+            // Add event handlers.
+            watcher.Changed += new FileSystemEventHandler(OnChanged);
+          
+
+            // Begin watching.
+            watcher.EnableRaisingEvents = true;
+        }
+
+        // Define the event handlers.
+        private static void OnChanged(object source, FileSystemEventArgs e)
+        {
+            var path = "D:\\New Task Mail Report\\New folder\\slack-erp-custom-integration-mvc\\Slack.Automation\\Promact.Erp.Util\\StringConstants\\StringConstants.json";
+            AppConstant a;
+            // var abcv = System.IO.File.OpenText(path);
+            try
+            {
+                using (StreamReader read = System.IO.File.OpenText(path))
+                {
+
+                    string json = read.ReadToEnd();
+                    a = JsonConvert.DeserializeObject<AppConstant>(json);
+                    read.Close();
+                    System.IO.File.OpenText(path).Close();
+                }
+
+                string NextPage;
+                a.TaskReport.TryGetValue("NextPage", out NextPage);
+                Util.Properties.Settings.Default["NextPage"] = NextPage;
+                Util.Properties.Settings.Default.Save();
+
+            }
+
+            catch (Exception)
+            {
+                
+            }
+
+        }
+
+       
 
         /**
         * @api {get} Home/AfterLogIn

@@ -337,5 +337,7 @@ namespace Promact.Erp.Util.StringConstants
         string StartWorking { get; }
         string HourSpentForTesting { get; }
         string HourSpentExceeded { get; }
+
+        
     }
 }
