@@ -74,7 +74,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="StringConstants\AppConstant.cs" />
+    <Compile Include="StringConstantConvertor\IStringConstantConvertor.cs" />
+    <Compile Include="StringConstantConvertor\StringConstantConvertor.cs" />
     <Compile Include="StringConstants\IStringConstantRepository.cs" />
     <Compile Include="StringConstants\StringConstantRepository.cs" />
   </ItemGroup>

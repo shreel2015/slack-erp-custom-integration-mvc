@@ -25,6 +25,7 @@ using Promact.Erp.DomainModel.Models;
 using Promact.Erp.Util;
 using Promact.Erp.Util.Email;
 using Promact.Erp.Util.EnvironmentVariableRepository;
+using Promact.Erp.Util.StringConstantConvertor;
 using Promact.Erp.Util.StringConstants;
 using System.Data.Entity;
 using System.Net.Http;
@@ -77,6 +78,7 @@ namespace Promact.Erp.Web.App_Start
             builder.RegisterType<SlackChannelRepository>().As<ISlackChannelRepository>();
             builder.RegisterType<ScrumReportRepository>().As<IScrumReportRepository>();
             builder.RegisterType<EnvironmentVariableRepository>().As<IEnvironmentVariableRepository>();
+            builder.RegisterType<Util.StringConstantConvertor.StringConstantConvertor>().As<IStringConstantConvertor>();
             builder.RegisterModule<NLogModule>();
             builder.RegisterModule<SimpleNLogModule>();
             var container = builder.Build();

@@ -11,6 +11,10 @@ using System.Web.Mvc;
 using Promact.Erp.Util.StringConstants;
 using System.IO;
 using Newtonsoft.Json;
+using System.Collections.Generic;
+using Newtonsoft.Json.Linq;
+using Promact.Erp.DomainModel.ApplicationClass;
+using Promact.Erp.Util.StringConstantConvertor;
 
 namespace Promact.Erp.Core.Controllers
 {
@@ -22,8 +26,9 @@ namespace Promact.Erp.Core.Controllers
         private readonly IOAuthLoginRepository _oAuthLoginRepository;
         private readonly IEnvironmentVariableRepository _envVariableRepository;
         private readonly IStringConstantRepository _stringConstant;
+        private readonly IStringConstantConvertor _stringConstantConvertor;
 
-        public HomeController(ApplicationUserManager userManager, IStringConstantRepository stringConstant, ApplicationSignInManager signInManager, ILogger logger, IOAuthLoginRepository oAuthLoginRepository, IEnvironmentVariableRepository envVariableRepository)
+        public HomeController(ApplicationUserManager userManager, IStringConstantRepository stringConstant, ApplicationSignInManager signInManager, ILogger logger, IOAuthLoginRepository oAuthLoginRepository, IEnvironmentVariableRepository envVariableRepository, IStringConstantConvertor stringConstantConvertor)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -31,6 +36,7 @@ namespace Promact.Erp.Core.Controllers
             _oAuthLoginRepository = oAuthLoginRepository;
             _envVariableRepository = envVariableRepository;
             _stringConstant = stringConstant;
+            _stringConstantConvertor = stringConstantConvertor;
         }
 
         /**
@@ -46,8 +52,8 @@ namespace Promact.Erp.Core.Controllers
         */
         public ActionResult Index()
         {
-            var path="D:\\New Task Mail Report\\New folder\\slack-erp-custom-integration-mvc\\Slack.Automation\\Promact.Erp.Util\\StringConstants";
-            CreateFileWatcher(path);
+            var newPath = "F:\\Siddhartha\\slack-automation\\slack-erp-custom-integration-mvc\\Slack.Automation\\Promact.Erp.Util\\StringConstants";
+            _stringConstantConvertor.CreateFileWatcher(newPath);
             if (User.Identity.IsAuthenticated)
             {
                 return RedirectToAction(_stringConstant.AfterLogIn, _stringConstant.Home);
@@ -55,59 +61,6 @@ namespace Promact.Erp.Core.Controllers
             return View();
             
         }
-
-        public void CreateFileWatcher(string path)
-        {
-            // Create a new FileSystemWatcher and set its properties.
-            FileSystemWatcher watcher = new FileSystemWatcher();
-            watcher.Path = path;
-            /* Watch for changes in LastAccess and LastWrite times, and 
-               the renaming of files or directories. */
-            watcher.NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite
-               | NotifyFilters.FileName | NotifyFilters.DirectoryName;
-            // Only watch text files.
-            watcher.Filter = "StringConstants.json";
-
-            // Add event handlers.
-            watcher.Changed += new FileSystemEventHandler(OnChanged);
-          
-
-            // Begin watching.
-            watcher.EnableRaisingEvents = true;
-        }
-
-        // Define the event handlers.
-        private static void OnChanged(object source, FileSystemEventArgs e)
-        {
-            var path = "D:\\New Task Mail Report\\New folder\\slack-erp-custom-integration-mvc\\Slack.Automation\\Promact.Erp.Util\\StringConstants\\StringConstants.json";
-            AppConstant a;
-            // var abcv = System.IO.File.OpenText(path);
-            try
-            {
-                using (StreamReader read = System.IO.File.OpenText(path))
-                {
-
-                    string json = read.ReadToEnd();
-                    a = JsonConvert.DeserializeObject<AppConstant>(json);
-                    read.Close();
-                    System.IO.File.OpenText(path).Close();
-                }
-
-                string NextPage;
-                a.TaskReport.TryGetValue("NextPage", out NextPage);
-                Util.Properties.Settings.Default["NextPage"] = NextPage;
-                Util.Properties.Settings.Default.Save();
-
-            }
-
-            catch (Exception)
-            {
-                
-            }
-
-        }
-
-       
 
         /**
         * @api {get} Home/AfterLogIn

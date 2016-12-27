@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using Autofac;
+using Newtonsoft.Json;
+using Promact.Erp.Util.StringConstantConvertor;
 using Promact.Erp.Util.StringConstants;
 using Promact.Erp.Web.App_Start;
 using System.IO;
@@ -20,24 +22,10 @@ namespace Promact.Erp.Web
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-
-            var path = "D:\\New Task Mail Report\\New folder\\slack-erp-custom-integration-mvc\\Slack.Automation\\Promact.Erp.Util\\StringConstants\\StringConstants.json";
-            AppConstant a;
-            using (StreamReader r = System.IO.File.OpenText(path))
-            {
-
-                string json = r.ReadToEnd();
-                a = JsonConvert.DeserializeObject<AppConstant>(json);
-                r.Close();
-            }
-            string NextPage;//=Util.Properties.Settings.Default.NextPage;
-            a.TaskReport.TryGetValue("NextPage", out NextPage);
-            Util.Properties.Settings.Default["NextPage"] = NextPage;
-            Util.Properties.Settings.Default.Save();
-            System.IO.File.OpenText(path).Close();
+            var convertor = container.Resolve<IStringConstantConvertor>();
+            convertor.OnInit();
             //Bot.ScrumMain(container);
             //Bot.Main(container);
-
         }
     }
 }

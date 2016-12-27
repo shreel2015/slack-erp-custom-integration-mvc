@@ -16,18 +16,16 @@ namespace Promact.Erp.Core.Controllers
     {
         private readonly ITaskMailRepository _taskMailReport;
         private readonly IStringConstantRepository _stringConstant;
-        private readonly AppConstant a;
         public TaskReportController(ITaskMailRepository taskMailReport, IStringConstantRepository stringConstant)
         {
             this._taskMailReport = taskMailReport;
             _stringConstant = stringConstant;
-            var path = "D:\\New Task Mail Report\\New folder\\slack-erp-custom-integration-mvc\\Slack.Automation\\Promact.Erp.Util\\StringConstants\\StringConstants.json";
-            using (StreamReader r = File.OpenText(path))
-            {
+            //var path = "D:\\New Task Mail Report\\New folder\\slack-erp-custom-integration-mvc\\Slack.Automation\\Promact.Erp.Util\\StringConstants\\StringConstants.json";
+            //using (StreamReader r = File.OpenText(path))
+            //{
 
-                string json = r.ReadToEnd();
-                a= JsonConvert.DeserializeObject<AppConstant>(json);
-            }
+            //    string json = r.ReadToEnd();
+            //}
         }
 
         //[HttpGet]
@@ -116,8 +114,7 @@ namespace Promact.Erp.Core.Controllers
         public async Task<List<TaskMailUserAc>> TaskMailDetailsReportPreviousDate(string UserRole, string CreatedOn,string UserId,string UserName)
         {
             string LoginId = User.Identity.GetUserId();
-            string PreviousPage;
-            a.TaskReport.TryGetValue("PreviousPage", out PreviousPage);
+            string PreviousPage = _stringConstant.EmailSubject;
             return await _taskMailReport.TaskMailDetailsReportNextPreviousDate(UserId, UserName, UserRole,CreatedOn, LoginId, PreviousPage);
             //return await _taskMailReport.TaskMailDetailsReport(UserId, UserRole, UserName, LoginId);
         }
